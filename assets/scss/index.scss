@@ -1,0 +1,108 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+}
+
+div#calenderControl {
+	width: 30%;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	text-align: center;
+	align-items: center;
+	gap: 0.5rem;
+
+	a {
+		text-decoration: inherit;
+		color: inherit;
+	}
+
+	> a {
+		flex: 1;
+		display: block;
+		background-color: lightblue;
+		transition: background-color 250ms ease-out;
+		&:hover {
+			background-color: aqua;
+		}
+	}
+
+	> textarea {
+		flex: 2;
+		display: block;
+		resize: none;
+		height: fit-content;
+		padding: 0.2rem;
+		text-align: center;
+	}
+	> div#calenderView {
+		display: grid;
+		grid-template-columns: repeat(7, 1fr);
+		width: 100%;
+		aspect-ratio: 7/6;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+		border-bottom: 1px solid rgba($color: #00000031, $alpha: 0.4);
+		border-right: 1px solid rgba($color: #00000031, $alpha: 0.4);
+		.calenderPoint {
+			border-top: 1px solid rgba($color: #00000031, $alpha: 0.4);
+			border-left: 1px solid rgba($color: #00000031, $alpha: 0.4);
+			width: 100%;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transition: background-color 400ms ease-out;
+			&.inactive {
+				background-color: lightgray;
+			}
+			&:not(.inactive) {
+				background-color: lightblue;
+				&.today {
+					background-color: aquamarine;
+				}
+				&.active,
+				&:hover {
+					background-color: aqua;
+				}
+			}
+		}
+	}
+}
+
+.notificationBanner {
+	background-color: lime;
+	width: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	text-align: center;
+	padding: 1rem;
+	font-size: 1.3rem;
+	transform: translateY(-100%);
+	animation: notification 5s ease-in-out;
+}
+
+@keyframes notification {
+	0% {
+		transform: translateY(-100%);
+	}
+	20% {
+		transform: translateY(0%);
+	}
+	80% {
+		transform: translateY(0%);
+	}
+	100% {
+		transform: translateY(-100%);
+	}
+}
