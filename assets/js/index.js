@@ -50,9 +50,12 @@ function createNotificationBanner(temporaryDate) {
 	/** @ Html element for the notification banner*/
 	let notificationBanner = document.createElement("div");
 	notificationBanner.classList.add("notificationBanner");
+
+	//Deleting the notification element from the page when its animation ends
 	notificationBanner.addEventListener("animationend", () => {
 		notificationBanner.remove();
 	});
+
 	notificationBanner.innerHTML =
 		"<p>This date has been marked!</p><p>" + temporaryDate + "</p>";
 	document.body.prepend(notificationBanner);
@@ -62,8 +65,11 @@ function createNotificationBanner(temporaryDate) {
  * @param {Date} temporaryDate Insert a Date
  * @ This function will handle click events for the calenderDates*/
 function dateOnClick(calenderDate, temporaryDate) {
+	//Adding the selected date to the global variable for the selected date
 	markedDate = temporaryDate;
+	//If any date is set to active/marked
 	if (document.querySelector("#calenderView .calenderPoint.active")) {
+		//Select all active date elements and remove the active class
 		document
 			.querySelector("#calenderView .calenderPoint.active")
 			.classList.remove("active");
@@ -80,26 +86,34 @@ function createCalenderDate(i, temporaryDate) {
 	/** @ Html Calender Date Elemenet*/
 	let calenderDate;
 
+	//Checking if the day is a weekend or if it is before today
 	if (
 		temporaryDate.getDay() == 0 ||
 		temporaryDate.getDay() == 6 ||
 		temporaryDate < dateToday
 	) {
+		//Setting Weekends and days before today to a div and to be inactive(unclickable / greyed out)
 		calenderDate = document.createElement("div");
 		calenderDate.classList.add("inactive");
 	} else {
+		//Setting all other days to be clickable with normal coloring and adding a click event
 		calenderDate = document.createElement("a");
 		calenderDate.setAttribute("href", "#");
 		calenderDate.addEventListener("click", (e) => {
+			//Prevent the a tag from perferming its default action (linking)
 			e.preventDefault();
 			dateOnClick(calenderDate, temporaryDate);
+
+			//Reporting back that it did not link the user anywhere
 			return false;
 		});
 	}
 
+	//adding the date as text to the date element
 	calenderDate.innerHTML = temporaryDate.getDate();
 	calenderDate.classList.add("calenderPoint");
 
+	//Checking if this element is the element the user selected and adds an active class if it was
 	if (
 		temporaryDate.getDate() == markedDate.getDate() &&
 		temporaryDate.getMonth() == markedDate.getMonth()
@@ -107,6 +121,7 @@ function createCalenderDate(i, temporaryDate) {
 		calenderDate.classList.add("active");
 	}
 
+	//Checking if this element is representing today and if it does adding class today for custom styling
 	if (
 		temporaryDate.getDate() == dateToday.getDate() &&
 		temporaryDate.getMonth() == dateToday.getMonth()
@@ -114,6 +129,7 @@ function createCalenderDate(i, temporaryDate) {
 		calenderDate.classList.add("today");
 	}
 
+	//Checking if the date is in the first 7 days of out calender view and if it is, adds the short name of the day at the start of the element
 	if (i < 7) {
 		/** @ Html element for storing localestring weekday (weekday as text) used for adding weekdays at the top of the calender*/
 		let dayOfTheWeek = document.createElement("p");
@@ -124,6 +140,7 @@ function createCalenderDate(i, temporaryDate) {
 		calenderDate.prepend(dayOfTheWeek);
 	}
 
+	//Checks if the date is the 1st of a month, and if it is adds the month short name to the end of the element for showing which month is added after the selected one and which the selected one is
 	if (temporaryDate.getDate() == 1) {
 		/** @ Html element for storing the month to visially show the starting month every time the 1st occurs*/
 		let dayOfTheMonth = document.createElement("p");
@@ -148,19 +165,31 @@ function createCalenderView(dateParam) {
 	/** @ Variable for strong the weekday for calender creation*/
 	let weekday = getWeekday(dateParam);
 
+	//Resetting the calenderview
 	calenderView.innerHTML = "";
 
+	//Iterates the on the amount of days we want shown in our calender, calculating the date, and starting the function to create the element
 	for (let i = 0; i < 42; i++) {
 		/** @ A varaible storing the temporary date used to fill empty spaces and correctly aligning the calender view*/
 		let temporaryDate = new Date(year, month, i + 1 - weekday);
 
 		createCalenderDate(i, temporaryDate);
 	}
+
+	//Sets the text to show the currently selected year
 	calenderText[0].innerHTML = year;
+
+	//Sets the text to show the currently selected month by full name
 	calenderText[1].innerHTML = new Date(year, month, 1)
 		.toLocaleDateString("da-DK", { month: "long" })
 		.toUpperCase();
 }
+
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////                                                    //////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////    STUFF BELOW SHOULD BE COMBINED AND OPTIMISED    //////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////                                                    //////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 /** @param {Date} dateParam Insert a Date
  * @ This function will change the selected date, to allow any set date and or month, allowing us to change month when clicking on the fill dates on both sides*/
@@ -226,8 +255,10 @@ function forwardYear() {
 //This iteration will add the event to the arrow controls
 calenderControls.forEach((element, i) => {
 	element.addEventListener("click", (e) => {
+		//Prevent the a tag from perferming its default action (linking)
 		e.preventDefault();
 		let index = i;
+		//Switch determening which button was arrow control was clicked and executing corresponding function
 		switch (index) {
 			case 0:
 				backwardYear();
@@ -242,6 +273,8 @@ calenderControls.forEach((element, i) => {
 				forwardYear();
 				break;
 		}
+
+		//Reporting back that it did not link the user anywhere
 		return false;
 	});
 });
