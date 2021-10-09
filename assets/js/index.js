@@ -1,62 +1,112 @@
+//Collecting html elements for manipulation
+/** @ calenderView 		= main grid */
 const calenderView = document.querySelector("#calenderView");
+/** @ calenderControls 	= arrows forwards and backwards */
 let calenderControls = document.querySelectorAll("#calenderControl > a");
+/** @ calenderText 		= identifier for current year/month */
 let calenderText = document.querySelectorAll("#calenderControl > textarea");
 
+/**
+ * @ initialising a constant holding the current date with time set to 00:00:00 for correct comparison to genereted dates
+ * if time is not 00:00:00 it will not recognize the generated date of today as being today since the total dateTime will be later than the generated one.
+ */
 const dateToday = new Date(
 	new Date(Date.now()).getFullYear(),
 	new Date(Date.now()).getMonth(),
 	new Date(Date.now()).getDate()
 );
+
+/**
+ * @ Initialising current date variable holding the information about which date you have clicked on
+ */
 let markedDate = dateToday;
 
-let firstOfMonth;
+/**
+ * @ Initialising variable holding the currently selected month, used for solving issues occurring when generating a month for the calenderView
+ */
+let selectedMonth;
 
-const getYear = function (dt) {
-	return new Date(dt).getFullYear();
+/**
+ * @param {Date} dateParam - Insert a Date
+ * @returns
+ * @ This function will return the Year of any Date you insert
+ */
+const getYear = function (dateParam) {
+	return new Date(dateParam).getFullYear();
 };
-const getMonth = function (dt) {
-	return new Date(dt).getMonth();
+
+/**
+ * @param {Date} dateParam - Insert a Date
+ * @returns
+ * @ This function will return the month of any Date you insert
+ */
+const getMonth = function (dateParam) {
+	return new Date(dateParam).getMonth();
 };
-const getWeekday = function (dt) {
-	if (dt.getDay() == 0) {
+
+/**
+ * @param {Date} dateParam - Insert a Date
+ * @returns
+ * @ This function will return the weekday of any Date you insert i.e. friday will return 4
+ */
+const getWeekday = function (dateParam) {
+	if (dateParam.getDay() == 0) {
 		return 6;
 	} else {
-		return dt.getDay() - 1;
+		return dateParam.getDay() - 1;
 	}
 };
 
-function createNotificationBanner(tempDate) {
+/**
+ *
+ * @param {Date} temporaryDate Insert a Date
+ * @ This function will use any Date to create a notification banner at the top of the screen with the date as part of the notification text
+ */
+function createNotificationBanner(temporaryDate) {
 	let notificationBanner = document.createElement("div");
 	notificationBanner.classList.add("notificationBanner");
 	notificationBanner.addEventListener("animationend", () => {
 		notificationBanner.remove();
 	});
 	notificationBanner.innerHTML =
-		"<p>This date has been marked!</p><p>" + tempDate + "</p>";
+		"<p>This date has been marked!</p><p>" + temporaryDate + "</p>";
 	document.body.prepend(notificationBanner);
 }
 
-function dateOnClick(calenderDate, e, dateHolder) {
-	e.preventDefault();
-	let tempDate = dateHolder;
-	markedDate = tempDate;
+/**
+ *
+ * @param {Date} calenderDate Insert a Date
+ * @param {Date} temporaryDate Insert a Date
+ * @ This function will handle click events for the calenderDates
+ */
+function dateOnClick(calenderDate, temporaryDate) {
+	markedDate = temporaryDate;
 	if (document.querySelector("#calenderView .calenderPoint.active")) {
 		document
 			.querySelector("#calenderView .calenderPoint.active")
 			.classList.remove("active");
 	}
 	calenderDate.classList.add("active");
-	chooseNewDate(dateHolder);
-	createNotificationBanner(tempDate);
+	chooseNewDate(temporaryDate);
+	createNotificationBanner(temporaryDate);
 }
 
-function createCalenderDate(i, dateHolder, year, month, weekday) {
+/**
+ *
+ * @param {Number} i Iteration number
+ * @param {Date} temporaryDate Insert a Date
+ * @ This function will create a specific calenderDate depending on the parameters inserted (used for iteration)
+ */
+function createCalenderDate(i, temporaryDate) {
 	let calenderDate;
+	let year = getYear(temporaryDate);
+	let month = getMonth(temporaryDate);
+	let weekday = getWeekday(temporaryDate);
 
 	if (
-		dateHolder.getDay() == 0 ||
-		dateHolder.getDay() == 6 ||
-		dateHolder < dateToday
+		temporaryDate.getDay() == 0 ||
+		temporaryDate.getDay() == 6 ||
+		temporaryDate < dateToday
 	) {
 		calenderDate = document.createElement("div");
 		calenderDate.classList.add("inactive");
@@ -64,57 +114,65 @@ function createCalenderDate(i, dateHolder, year, month, weekday) {
 		calenderDate = document.createElement("a");
 		calenderDate.setAttribute("href", "#");
 		calenderDate.addEventListener("click", (e) => {
-			dateOnClick(calenderDate, e, dateHolder);
+			e.preventDefault();
+			dateOnClick(calenderDate, temporaryDate);
+			return false;
 		});
-
-		if (
-			dateHolder.getDate() == dateToday.getDate() &&
-			dateHolder.getMonth() == dateToday.getMonth()
-		) {
-			calenderDate.classList.add("today");
-		}
-
-		if (
-			dateHolder.getDate() == markedDate.getDate() &&
-			dateHolder.getMonth() == markedDate.getMonth()
-		) {
-			calenderDate.classList.add("active");
-		}
 	}
-	calenderDate.innerHTML = dateHolder.getDate();
+
+	calenderDate.innerHTML = temporaryDate.getDate();
 	calenderDate.classList.add("calenderPoint");
 
-	if (i < 7) {
-		let dOTW = document.createElement("p");
-		dOTW.innerHTML =
-			dateHolder
-				.toLocaleDateString("da-DK", { weekday: "short" })
-				.toUpperCase() + ".";
-		calenderDate.prepend(dOTW);
+	if (
+		temporaryDate.getDate() == markedDate.getDate() &&
+		temporaryDate.getMonth() == markedDate.getMonth()
+	) {
+		calenderDate.classList.add("active");
 	}
 
-	if (dateHolder.getDate() == 1) {
-		let dOTM = document.createElement("p");
-		dOTM.innerHTML = dateHolder
+	if (
+		temporaryDate.getDate() == dateToday.getDate() &&
+		temporaryDate.getMonth() == dateToday.getMonth()
+	) {
+		calenderDate.classList.add("today");
+	}
+
+	if (i < 7) {
+		let dayOfTheWeek = document.createElement("p");
+		dayOfTheWeek.innerHTML =
+			temporaryDate
+				.toLocaleDateString("da-DK", { weekday: "short" })
+				.toUpperCase() + ".";
+		calenderDate.prepend(dayOfTheWeek);
+	}
+
+	if (temporaryDate.getDate() == 1) {
+		let dayOfTheMonth = document.createElement("p");
+		dayOfTheMonth.innerHTML = temporaryDate
 			.toLocaleDateString("da-DK", { month: "short" })
 			.toLowerCase();
-		calenderDate.append(dOTM);
+		calenderDate.append(dayOfTheMonth);
 	}
 
 	calenderView.appendChild(calenderDate);
 }
 
-function createCalenderView(dt) {
-	let year = getYear(dt);
-	let month = getMonth(dt);
-	let weekday = getWeekday(dt);
+/**
+ *
+ * @param {Date} dateParam  Insert a date
+ * @ This function will reset and create the calender main view, and start the iteration for the dates in the selected month
+ */
+function createCalenderView(dateParam) {
+	let year = getYear(dateParam);
+	let month = getMonth(dateParam);
+	let weekday = getWeekday(dateParam);
 
 	calenderView.innerHTML = "";
 
 	for (let i = 0; i < 42; i++) {
-		let dateHolder = new Date(year, month, i + 1 - weekday);
+		let temporaryDate = new Date(year, month, i + 1 - weekday);
 
-		createCalenderDate(i, dateHolder, year, month, weekday);
+		createCalenderDate(i, temporaryDate);
 	}
 	calenderText[0].innerHTML = year;
 	calenderText[1].innerHTML = new Date(year, month, 1)
@@ -122,46 +180,64 @@ function createCalenderView(dt) {
 		.toUpperCase();
 }
 
-function chooseNewDate(dt) {
-	let year = getYear(dt);
-	let month = getMonth(dt);
-	firstOfMonth = new Date(year, month, 1);
+/**
+ *
+ * @param {Date} dateParam Insert a Date
+ * @ This function will change the selected date, to allow any set date and or month, allowing us to change month when clicking on the fill dates on both sides
+ */
+function chooseNewDate(dateParam) {
+	let year = getYear(dateParam);
+	let month = getMonth(dateParam);
+	selectedMonth = new Date(year, month, 1);
 
 	createCalenderView(new Date(year, month, 1));
 }
 
+/**
+ * @ This will go to the last month, used for arrow controls
+ */
 function backwardMonth() {
-	let year = getYear(firstOfMonth);
-	let month = getMonth(firstOfMonth) - 1;
-	firstOfMonth = new Date(year, month, 1);
+	let year = getYear(selectedMonth);
+	let month = getMonth(selectedMonth) - 1;
+	selectedMonth = new Date(year, month, 1);
 
 	createCalenderView(new Date(year, month, 1));
 }
 
+/**
+ * @ This will go to the next month, used for arrow controls
+ */
 function forwardMonth() {
-	let year = getYear(firstOfMonth);
-	let month = getMonth(firstOfMonth) + 1;
-	firstOfMonth = new Date(year, month, 1);
+	let year = getYear(selectedMonth);
+	let month = getMonth(selectedMonth) + 1;
+	selectedMonth = new Date(year, month, 1);
 
 	createCalenderView(new Date(year, month, 1));
 }
 
+/**
+ * @ This will go to the last year, used for arrow controls
+ */
 function backwardYear() {
-	let year = getYear(firstOfMonth) - 1;
-	let month = getMonth(firstOfMonth);
-	firstOfMonth = new Date(year, month, 1);
+	let year = getYear(selectedMonth) - 1;
+	let month = getMonth(selectedMonth);
+	selectedMonth = new Date(year, month, 1);
 
 	createCalenderView(new Date(year, month, 1));
 }
 
+/**
+ * @ This will go to the next year, used for arrow controls
+ */
 function forwardYear() {
-	let year = getYear(firstOfMonth) + 1;
-	let month = getMonth(firstOfMonth);
-	firstOfMonth = new Date(year, month, 1);
+	let year = getYear(selectedMonth) + 1;
+	let month = getMonth(selectedMonth);
+	selectedMonth = new Date(year, month, 1);
 
 	createCalenderView(new Date(year, month, 1));
 }
 
+//This iteration will add the event to the arrow controls
 calenderControls.forEach((element, i) => {
 	element.addEventListener("click", (e) => {
 		e.preventDefault();
