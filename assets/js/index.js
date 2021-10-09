@@ -52,6 +52,7 @@ function dateOnClick(calenderDate, e, dateHolder) {
 
 function createCalenderDate(i, dateHolder, year, month, weekday) {
 	let calenderDate;
+
 	if (
 		dateHolder.getDay() == 0 ||
 		dateHolder.getDay() == 6 ||
@@ -65,12 +66,14 @@ function createCalenderDate(i, dateHolder, year, month, weekday) {
 		calenderDate.addEventListener("click", (e) => {
 			dateOnClick(calenderDate, e, dateHolder);
 		});
+
 		if (
 			dateHolder.getDate() == dateToday.getDate() &&
 			dateHolder.getMonth() == dateToday.getMonth()
 		) {
 			calenderDate.classList.add("today");
 		}
+
 		if (
 			dateHolder.getDate() == markedDate.getDate() &&
 			dateHolder.getMonth() == markedDate.getMonth()
@@ -80,6 +83,7 @@ function createCalenderDate(i, dateHolder, year, month, weekday) {
 	}
 	calenderDate.innerHTML = dateHolder.getDate();
 	calenderDate.classList.add("calenderPoint");
+
 	if (i < 7) {
 		let dOTW = document.createElement("p");
 		dOTW.innerHTML =
@@ -88,6 +92,7 @@ function createCalenderDate(i, dateHolder, year, month, weekday) {
 				.toUpperCase() + ".";
 		calenderDate.prepend(dOTW);
 	}
+
 	if (dateHolder.getDate() == 1) {
 		let dOTM = document.createElement("p");
 		dOTM.innerHTML = dateHolder
@@ -95,6 +100,7 @@ function createCalenderDate(i, dateHolder, year, month, weekday) {
 			.toLowerCase();
 		calenderDate.append(dOTM);
 	}
+
 	calenderView.appendChild(calenderDate);
 }
 
