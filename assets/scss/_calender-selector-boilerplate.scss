@@ -1,0 +1,86 @@
+//Element for the notification banner
+.notificationBanner {
+	background-color: lime;
+	width: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	text-align: center;
+	padding: 1rem;
+	font-size: 1.3rem;
+	transform: translateY(-100%);
+	animation: notification 5s ease-in-out;
+}
+
+//Animation for the notification banner
+@keyframes notification {
+	0% {
+		transform: translateY(-100%);
+	}
+	20% {
+		transform: translateY(0%);
+	}
+	80% {
+		transform: translateY(0%);
+	}
+	100% {
+		transform: translateY(-100%);
+	}
+}
+
+//MainWrapper for wrapping controls and the calender together
+#calenderControl {
+	//Arrow Control for going a year back
+	> a:nth-of-type(1) {
+	}
+
+	//Arrow Control for going a month back
+	> a:nth-of-type(2) {
+	}
+
+	//Element for showing which year is shown in the calender
+	> textarea:nth-of-type(1) {
+	}
+
+	//Element for showing which month is showin in the calender
+	> textarea:nth-of-type(2) {
+	}
+
+	//Arrow Control for going a month forward
+	> a:nth-of-type(3) {
+	}
+
+	//Arrow Control for going a year forward
+	> a:nth-of-type(4) {
+	}
+
+	//The main grid for holding the generated calender
+	> #calenderView {
+		//The element used to visually represent the dates in the calender
+		.calenderDate {
+			//The date element with the class inactive due to being a weekend or being before the current day
+			&.inactive {
+			}
+
+			//The date element without the class meaning they will be today or later and is a "work" day
+			&:not(.inactive) {
+			}
+
+			//The date element for the date today
+			&.today {
+			}
+
+			//The date element when selected
+			&.active {
+			}
+
+			//The visual representation of which day is stored in this column, the element exists as a paragraph in the date element
+			& > .dayOfTheWeek {
+			}
+
+			//The visual representation of a date being the 1st in a month and showing which month its starting
+			& > p:not(.dayOfTheWeek) {
+			}
+		}
+	}
+}
